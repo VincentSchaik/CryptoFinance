@@ -149,6 +149,14 @@ We avoid the phrase “stock prediction,” as Bitcoin is not a stock.
 * Conducted exploratory analysis within `notebooks/btc_price_prediction.ipynb` to understand price trends, volatility clusters, and volume regimes.
 * Visualized correlations between engineered indicators, sentiment, and returns to identify dominant drivers.
 * Plotted class balance and temporal drift to confirm the necessity of regular retraining.
+* Built five additional exploratory models to evaluate different machine learning algorithms for time-series classification.
+* Model Performance Overview: 
+        ◦ Model 1: LSTM using 20 features → Accuracy: 0.60
+        ◦ Model 2: LSTM using 41 features → Accuracy: 0.70
+        ◦ Model 3: LSTM using 32 features → Accuracy: 0.70
+        ◦ Model 4: Random Forest using 59 features → Accuracy: 0.70
+        ◦ Model 5: Gradient Boosting Classifier using 59 features → Accuracy: 0.76
+   
 
 ## Expanding the Dataset
 * Applied web scraping scripts (documented in the notebooks) to ingest weekly on-chain commentaries from 2020–2025.
@@ -160,6 +168,11 @@ We avoid the phrase “stock prediction,” as Bitcoin is not a stock.
 * Lagged returns and volatility estimates to capture momentum and mean-reversion effects.
 * One-hot encoded sentiment labels and constructed interaction terms between sentiment and price momentum.
 * Scaled numerical features with standardization where appropriate and persisted preprocessing parameters for reuse.
+* Ensured that time order was strictly preserved for all models to avoid data leakage.
+* Verified that no rows contained null values across the dataset.
+* Used cyclical transformations for month and day-of-week using sin/cos encoding to better capture seasonality and periodicity.
+* For tree-based models (e.g., Random Forest), created lag features to represent sequential dependencies.
+
 
 ### Machine Learning Guiding Questions
 * **What are the specific objectives and success criteria for your machine learning model?** – The objective is to flag next-day price jumps of at least 1%; success is judged by hold-out accuracy, ROC-AUC, and class-level precision/recall recorded in the notebooks (e.g., XGBoost reached 0.7178 accuracy with ROC-AUC 0.5866 on the reserved test window, while Logistic Regression achieved 0.6963 accuracy).
