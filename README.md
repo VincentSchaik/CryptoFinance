@@ -207,7 +207,7 @@ We trained 7 exploratory models to establish a baseline and obtained the followi
 
 
 ### Next steps
-1. **Priority: Address class imbalance** using SMOTE, class weighting, or undersampling techniques before further experimentation
+1. **Priority: Address class imbalance** using SMOTE or other undersampling techniques before further experimentation
 2. **Ensemble approach**: Combine Model 6's sentiment analysis with Model 1a's technical analysis for potentially better balance
 
 ### Team Responsibilities
