@@ -106,7 +106,7 @@ We avoid the phrase “stock prediction,” as Bitcoin is not a stock.
 ### Model Development
 For our technical analysis, we feature-engineered 26 key technical indicators. In addition, we label-encoded sentiment classifications from GlassNode and GPT-5 data sources.
 All numerical features were standardized using StandardScaler to bring all values to a similar scale. This prevents bias toward features with larger magnitudes and improves model convergence.
-We trained 6 exploratory models to establish a baseline and obtained the following results. Please note that we focus on bullish recall due to the models' tendency to always predict bearish and inability to truly identify both probability classes:
+We trained 7 exploratory models to establish a baseline and obtained the following results. Please note that we focus on bullish recall due to the models' tendency to always predict bearish and inability to truly identify both probability classes:
 
 ### Model Experimentation Results
 
