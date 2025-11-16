@@ -56,10 +56,10 @@ We avoid the phrase “stock prediction,” as Bitcoin is not a stock.
 - **File**: `data/raw/weekly_on_chain_sentiment.csv`
 
 - **Source**: Daily Twitter
-- **Extraction**: Web scraping scripts
-- **Processing**: G
-- **Format**: One sentiment label per week, forward-filled to each corresponding trading day
-- **File**: `data/raw/weekly_on_chain_sentiment.csv`
+- **Extraction**: Kaggle
+- **Processing**: Filter bots, consolidate by day and filter for only verified users.
+- **Format**: csv
+- **File**: `data/raw/bitcoin_tweets_clean.csv`
 ---
 
 ## Risks and Unknowns
@@ -104,14 +104,76 @@ We avoid the phrase “stock prediction,” as Bitcoin is not a stock.
 - Assessed temporal drift in sentiment frequency and signal consistency
 
 ### Model Development
-- For our technical analysis we feature engineered 26 key technical indicators. In addition, we LabelEncoded sentiment classifier from GlassNode + GPT-5 Datasource.
-- All Numerical features were standardized using StandardScaler to bring all values to a similar scale. This avoids bias toward features with larger values and improves model convergence.
-We trained and explored the following models to stablish a baseline:
-- Deep Neural Networks, Linear regression and XGBoost Classifier.
+For our technical analysis, we feature-engineered 26 key technical indicators. In addition, we label-encoded sentiment classifications from GlassNode and GPT-5 data sources.
+All numerical features were standardized using StandardScaler to bring all values to a similar scale. This prevents bias toward features with larger magnitudes and improves model convergence.
+We trained 6 exploratory models to establish a baseline and obtained the following results. Please note that we focus on bullish recall due to the models' tendency to always predict bearish and inability to truly identify both probability classes:
 
-After comparing their results we decided to developed a multi-modal deep learning model that combines Natural Language Processing(NLP) with time-series analysis(using CNN) to predict price movement.
-- The model fuses sentiment analysis from financial news information with technical market indicators to generate binary classification predictions (bullish/bearish).
+### Model Experimentation Results
 
+# Model Experimentation Results
+
+## Performance Comparison Table
+
+| Model | Algorithm | Features | Probability Threshold | Accuracy | Recall (Bullish) |
+|-------|-----------|----------|----------------------|----------|------------------|
+| **1a** | LSTM | 20 | 0.40 | 0.53 | 0.44 |
+| **1b** | LSTM | 20 | 0.45 | 0.62 | 0.15 |
+| **2a** | LSTM | 41 | 0.20 | 0.57 | 0.25 |
+| **2b** | LSTM | 41 | 0.25 | 0.70 | 0.04 |
+| **3a** | LSTM | 32 | 0.30 | 0.59 | 0.26 |
+| **3b** | LSTM | 32 | 0.35 | 0.70 | 0.05 |
+| **4** | Random Forest | 59 | N/A | 0.70 | 0.00 |
+| **5** | Gradient Boosting | 59 | N/A | 0.76 | 0.10 |
+| **6** | FinBert+CNN | N/A | 33 | 0.59 | **0.41** | - |
+| **7** | Dual FinBert(CNN+Social Media) | N/A | 33 | 0.63 | 0.1 | - |
+
+### Analysis Summary
+# Model Experimentation Results
+
+## Performance Comparison Table
+
+| Model | Algorithm | Features | Probability Threshold | Accuracy | Recall (Bullish) |
+|-------|-----------|----------|----------------------|----------|------------------|
+| **1a** | LSTM | 20 | 0.40 | 0.53 | **0.44** |
+| **1b** | LSTM | 20 | 0.45 | 0.62 | 0.15 |
+| **2a** | LSTM | 41 | 0.20 | 0.57 | 0.25 |
+| **2b** | LSTM | 41 | 0.25 | 0.70 | 0.04 |
+| **3a** | LSTM | 32 | 0.30 | 0.59 | 0.26 |
+| **3b** | LSTM | 32 | 0.35 | 0.70 | 0.05 |
+| **4** | Random Forest | 59 | N/A | 0.70 | 0.00 |
+| **5** | Gradient Boosting | 59 | N/A | **0.76** | 0.10 |
+| **6** | FinBERT + CNN | N/A | 0.33 | 0.59 | 0.41 |
+| **7** | FinBERT + CNN + Social Media | N/A | 0.33 | 0.63 | 0.10 |
+
+## Analysis Summary
+
+### Accuracy vs. Recall Trade-off
+- **Clear pattern across LSTM models**: As probability threshold increases by just 0.05, accuracy improves by 9-13 percentage points but recall collapses by 21-29 points
+- **Best accuracy**: Model 5 (Gradient Boosting) at 0.76, but with only 0.10 recall
+- **Best recall**: LSTM with a 0.44 accuracy but 0.53 accuracy.
+- **Sweet spot**: Model 6 (FinBERT + CNN) at 0.41, with reasonable 0.59 accuracy
+
+### Feature and Data Impact
+- **Traditional technical indicators (20-59 features)**: All LSTM models struggle with class imbalance regardless of feature count and probability threshold.
+- **Sentiment-based features (FinBERT)**: Model 6 demonstrates that NLP-derived sentiment features significantly improve bullish class detection.
+- **Social media integration**: Model 7 shows adding social media data improved accuracy (+4 points) but catastrophically reduced recall from 0.41 to 0.10, suggesting noise or conflicting signals
+
+### Algorithm Comparison
+- **LSTM models (1-3)**: Highly threshold-sensitive; can achieve either decent recall OR accuracy, never both simultaneously
+- **Tree-based models (4-5)**: Highest accuracy but severely biased toward majority class; practically unusable for bullish prediction
+- **Deep learning + NLP (6-7)**: Most promising approach, with Model 6 achieving the best balance between metrics
+
+### Critical Insights
+1. **Class imbalance**: All models default to predicting bearish class to maximize accuracy.
+2. **Feature quality matters more than quantity**: Model 6 with sentiment features outperforms Model 4 with 59 technical indicators.
+3. **Social media data is detrimental**: Adding social media to FinBERT features improved accuracy but destroyed recall, indicating potential overfitting or irrelevant noise
+4. **No model is production-ready**: While the models are above 50/50 coin flip average, best recall is only 0.41-0.44, meaning models miss over half of bullish opportunities
+
+### Model 6 Final Evaluation Metrics
+
+### Next steps
+1. **Priority: Address class imbalance** using SMOTE, class weighting, or undersampling techniques before further experimentation
+2. **Ensemble approach**: Combine Model 6's sentiment analysis with Model 1a's technical analysis for potentially better balance
 
 ### Team Responsibilities
 - **Kirti Vardhan**: Feature engineering and modeling experiments 
@@ -153,6 +215,13 @@ After comparing their results we decided to developed a multi-modal deep learnin
 * Conducted exploratory analysis within `notebooks/btc_price_prediction.ipynb` to understand price trends, volatility clusters, and volume regimes.
 * Visualized correlations between engineered indicators, sentiment, and returns to identify dominant drivers.
 * Plotted class balance and temporal drift to confirm the necessity of regular retraining.
+* Built five additional exploratory models to evaluate different machine learning algorithms for time-series classification.
+* Model Performance Overview: 
+        ◦ Model 1: LSTM using 20 features → Accuracy: 0.60
+        ◦ Model 2: LSTM using 41 features → Accuracy: 0.70
+        ◦ Model 3: LSTM using 32 features → Accuracy: 0.70
+        ◦ Model 4: Random Forest using 59 features → Accuracy: 0.70
+        ◦ Model 5: Gradient Boosting Classifier using 59 features → Accuracy: 0.76
 
 ## Expanding the Dataset
 * Applied web scraping scripts (documented in the notebooks) to ingest weekly on-chain commentaries from 2020–2025.
@@ -164,6 +233,10 @@ After comparing their results we decided to developed a multi-modal deep learnin
 * Lagged returns and volatility estimates to capture momentum and mean-reversion effects.
 * One-hot encoded sentiment labels and constructed interaction terms between sentiment and price momentum.
 * Scaled numerical features with standardization where appropriate and persisted preprocessing parameters for reuse.
+* Ensured that time order was strictly preserved for all models to avoid data leakage.
+* Verified that no rows contained null values across the dataset.
+* Used cyclical transformations for month and day-of-week using sin/cos encoding to better capture seasonality and periodicity.
+* For tree-based models (e.g., Random Forest), created lag features to represent sequential dependencies.
 
 ### Machine Learning Guiding Questions
 * **What are the specific objectives and success criteria for your machine learning model?** – The objective is to flag next-day price jumps of at least 1%; success is judged by hold-out accuracy, ROC-AUC, and class-level precision/recall recorded in the notebooks (e.g., XGBoost reached 0.7178 accuracy with ROC-AUC 0.5866 on the reserved test window, while Logistic Regression achieved 0.6963 accuracy).
