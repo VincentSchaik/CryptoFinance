@@ -79,10 +79,10 @@ pip install -r requirements.txt
 
 
 **Source**: Daily Twitter
-- **Extraction**: Kaggle
-- **Processing**: Bitcoin Daily Twitter information
+- **Extraction**: Kaggle DB
+- **Processing**: Filter bots, consolidate by day and filter for only verified users.
 - **Format**: csv
-- **File**: `data/raw/bitcoin_tweets_clean.csv`
+- **File**: `data/processed/bitcoin_tweets_clean.csv`
 ---
 
 ## Risks and Unknowns
@@ -228,8 +228,8 @@ We trained 7 exploratory models to establish a baseline and obtained the followi
 
 ### Team Responsibilities
 - **Kirti Vardhan**: Feature engineering and modeling experiments 
-- **Julian Bueno**: Feature engineering and modeling experiments 
-- **Juan Bueno**: Feature engineering and modeling experiments
+- **Julian Bueno**: Feature engineering and modeling experiments, major model adaptation, GitHub adaptation.
+- **Juan Bueno**: Feature engineering and modeling experiments, sentiment data cleaning, wrangling, power point template & presentation.
 - **Vincent Van Schaik**: Technical development including sentiment scraping, labeling, feature engineering, data cleaning, EDA, modeling workflows, and MLFlow on Databricks inegration. 
 
 ---
@@ -260,6 +260,7 @@ We trained 7 exploratory models to establish a baseline and obtained the followi
 
 ---
 ## Team Members Reflection Videos
+* Juan Bueno: [Reflection](]https://youtu.be/NN7cLu31mZc)
 * Julian Bueno - [Reflection](https://youtu.be/AwxNpUw-MMU)
 
 ## Acknowledgements
